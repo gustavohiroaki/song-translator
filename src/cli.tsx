@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import {input, password, select, confirm} from '@inquirer/prompts';
-import {execFileSync} from 'node:child_process';
+import {execFileSync, spawnSync} from 'node:child_process';
+import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {getConfigPath, getOpenAiKey, saveOpenAiKey} from './config.js';
 import {fetchUtaNetSong} from './utaNet.js';
 import {translateSong} from './openaiTranslator.js';
@@ -27,10 +30,41 @@ function updateCli() {
   execFileSync('npm', ['install', '-g', packageUrl], {stdio: 'inherit'});
 }
 
+function openTemporaryEditor(initialContent = '') {
+  const tempDir = mkdtempSync(join(tmpdir(), 'song-translator-'));
+  const tempFile = join(tempDir, 'lyrics.txt');
+  const template = [
+    '# Cole a letra abaixo.',
+    '# Linhas iniciadas com # serao ignoradas.',
+    '',
+    initialContent,
+  ].join('\n');
+  writeFileSync(tempFile, template, 'utf8');
+
+  const editor = process.env.VISUAL || process.env.EDITOR || (process.platform === 'win32' ? 'notepad' : 'vi');
+  const result = spawnSync(editor, [tempFile], {stdio: 'inherit', shell: process.platform === 'win32'});
+  if (result.error) {
+    rmSync(tempDir, {recursive: true, force: true});
+    throw new Error(`Nao foi possivel abrir o editor temporario com "${editor}".`);
+  }
+  if (typeof result.status === 'number' && result.status !== 0) {
+    rmSync(tempDir, {recursive: true, force: true});
+    throw new Error(`O editor temporario foi encerrado com codigo ${result.status}.`);
+  }
+
+  const content = readFileSync(tempFile, 'utf8')
+    .split('\n')
+    .filter((line) => !line.trimStart().startsWith('#'))
+    .join('\n')
+    .trim();
+  rmSync(tempDir, {recursive: true, force: true});
+  return content;
+}
+
 async function collectSong(): Promise<SongInput> {
   const mode = await select({message: 'Como deseja informar a musica?', choices: [
     {name: 'Extrair do Uta-Net por ID ou URL', value: 'uta'},
-    {name: 'Colar letra manualmente', value: 'manual'},
+    {name: 'Abrir editor temporario para colar a letra', value: 'manual'},
   ]});
   if (mode === 'uta') {
     const id = await input({message: 'ID ou URL do Uta-Net', default: '386588', validate: (v: string) => v.trim().length > 0 || 'Informe o ID ou URL.'});
@@ -38,14 +72,8 @@ async function collectSong(): Promise<SongInput> {
   }
   const title = await input({message: 'Titulo da musica', validate: (v: string) => v.trim().length > 0 || 'Informe o titulo.'});
   const artist = await input({message: 'Artista (opcional)'});
-  console.log('Cole a letra. Finalize com uma linha contendo apenas EOF.');
-  const chunks: string[] = [];
-  for await (const chunk of process.stdin) {
-    const text = String(chunk);
-    if (text.includes('\nEOF')) { chunks.push(text.split('\nEOF')[0]); break; }
-    chunks.push(text);
-  }
-  const lyrics = chunks.join('').trim();
+  console.log('Abrindo editor temporario para a letra.');
+  const lyrics = openTemporaryEditor();
   if (!lyrics) throw new Error('Letra manual vazia.');
   return {title, artist, lyrics};
 }
