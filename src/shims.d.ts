@@ -1,0 +1,17 @@
+declare module 'node:fs/promises';
+declare module 'node:os';
+declare module 'node:path';
+declare module 'node:fs';
+declare module 'node:child_process';
+declare module 'react';
+declare module 'ink';
+declare module 'ink-gradient';
+declare module '@inquirer/prompts';
+declare module 'dotenv';
+declare module 'cheerio';
+declare module 'openai';
+declare module 'kuroshiro';
+declare module 'kuroshiro-analyzer-kuromoji';
+declare module 'pdfkit';
+declare const process: any;
+declare module 'react/jsx-runtime';
