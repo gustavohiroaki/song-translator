@@ -16,32 +16,32 @@ CLI em React/Ink para extrair letras japonesas, gerar uma versao em romaji e tra
 
 O pacote e publicado pelo GitHub Actions como asset da release chamado `song-translator.tgz`. Os instaladores baixam sempre a ultima release por padrao.
 
-Antes de divulgar, troque `seu-usuario/song-translator` pelo repositorio real nos scripts ou defina a variavel `SONG_TRANSLATOR_REPO` ao instalar.
+Por padrao, os scripts usam o repositorio `gustavohiroaki/song-translator`. Para forks, defina a variavel `SONG_TRANSLATOR_REPO` ao instalar.
 
 ### Windows
 
-1. Instale Node.js 20 ou superior.
+1. Instale Node.js 24 ou superior.
 2. Abra o PowerShell e rode:
 
 ```powershell
-$env:SONG_TRANSLATOR_REPO="seu-usuario/song-translator"
-iwr -useb https://raw.githubusercontent.com/seu-usuario/song-translator/main/scripts/install-windows.ps1 | iex
+$env:SONG_TRANSLATOR_REPO="gustavohiroaki/song-translator"
+iwr -useb https://raw.githubusercontent.com/gustavohiroaki/song-translator/main/scripts/install-windows.ps1 | iex
 ```
 
 ### Linux
 
-1. Instale Node.js 20 ou superior.
+1. Instale Node.js 24 ou superior.
 2. Rode:
 
 ```bash
-export SONG_TRANSLATOR_REPO="seu-usuario/song-translator"
-curl -fsSL https://raw.githubusercontent.com/seu-usuario/song-translator/main/scripts/install-linux.sh | bash
+export SONG_TRANSLATOR_REPO="gustavohiroaki/song-translator"
+curl -fsSL https://raw.githubusercontent.com/gustavohiroaki/song-translator/main/scripts/install-linux.sh | bash
 ```
 
 ### Instalacao manual pela release
 
 ```bash
-npm install -g https://github.com/seu-usuario/song-translator/releases/latest/download/song-translator.tgz
+npm install -g https://github.com/gustavohiroaki/song-translator/releases/latest/download/song-translator.tgz
 song-translator
 ```
 

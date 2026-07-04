@@ -37,10 +37,10 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/seu-usuario/song-translator.git"
+    "url": "https://github.com/gustavohiroaki/song-translator.git"
   }
 }

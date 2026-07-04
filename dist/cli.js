@@ -21,7 +21,7 @@ async function configureKey(force = false) {
     return key;
 }
 function getInstallPackageUrl() {
-    const repo = process.env.SONG_TRANSLATOR_REPO ?? 'seu-usuario/song-translator';
+    const repo = process.env.SONG_TRANSLATOR_REPO ?? 'gustavohiroaki/song-translator';
     return process.env.SONG_TRANSLATOR_PACKAGE_URL ?? `https://github.com/${repo}/releases/latest/download/song-translator.tgz`;
 }
 function updateCli() {

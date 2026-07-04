@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${SONG_TRANSLATOR_REPO:-seu-usuario/song-translator}"
+REPO="${SONG_TRANSLATOR_REPO:-gustavohiroaki/song-translator}"
 PACKAGE_URL="${SONG_TRANSLATOR_PACKAGE_URL:-https://github.com/${REPO}/releases/latest/download/song-translator.tgz}"
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "Node.js 20+ e necessario antes de instalar." >&2
+  echo "Node.js 24+ e necessario antes de instalar." >&2
   exit 1
 fi
 
