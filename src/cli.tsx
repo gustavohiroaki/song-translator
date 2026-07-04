@@ -42,7 +42,7 @@ function openTemporaryEditor(initialContent = '') {
   writeFileSync(tempFile, template, 'utf8');
 
   const editor = process.env.VISUAL || process.env.EDITOR || (process.platform === 'win32' ? 'notepad' : 'vi');
-  const result = spawnSync(editor, [tempFile], {stdio: 'inherit', shell: process.platform === 'win32'});
+  const result = spawnSync(editor, [tempFile], {stdio: 'inherit'});
   if (result.error) {
     rmSync(tempDir, {recursive: true, force: true});
     throw new Error(`Nao foi possivel abrir o editor temporario com "${editor}".`);

@@ -5,10 +5,17 @@ import type {SongInput, TranslationResult} from './types.js';
 
 let kuroshiro: any;
 let kuroshiroReady = false;
+
+function resolveDefaultExport<T>(value: T): T extends {default: infer U} ? U : T {
+  return ((value as {default?: unknown})?.default ?? value) as T extends {default: infer U} ? U : T;
+}
+
 async function romanize(text: string) {
-  kuroshiro ??= new Kuroshiro();
+  const KuroshiroCtor = resolveDefaultExport(Kuroshiro) as new () => any;
+  const KuromojiAnalyzerCtor = resolveDefaultExport(KuromojiAnalyzer) as new () => any;
+  kuroshiro ??= new KuroshiroCtor();
   if (!kuroshiroReady) {
-    await kuroshiro.init(new KuromojiAnalyzer());
+    await kuroshiro.init(new KuromojiAnalyzerCtor());
     kuroshiroReady = true;
   }
   return kuroshiro.convert(text, {to: 'romaji', mode: 'spaced', romajiSystem: 'hepburn'});
