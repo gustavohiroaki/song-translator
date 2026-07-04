@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-import React from 'react';
-import {render, Box, Text} from 'ink';
-import Gradient from 'ink-gradient';
 import {input, password, select, confirm} from '@inquirer/prompts';
 import {execFileSync} from 'node:child_process';
 import {getConfigPath, getOpenAiKey, saveOpenAiKey} from './config.js';
@@ -9,13 +6,6 @@ import {fetchUtaNetSong} from './utaNet.js';
 import {translateSong} from './openaiTranslator.js';
 import {generatePdfs} from './pdf.js';
 import type {SongInput} from './types.js';
-
-function Header() {
-  return <Box flexDirection="column" marginBottom={1}>
-    <Gradient name="summer"><Text bold>Song Translator CLI</Text></Gradient>
-    <Text>Japones → Romaji + Portugues em PDF</Text>
-  </Box>;
-}
 
 async function configureKey(force = false) {
   const current = await getOpenAiKey();
@@ -61,7 +51,8 @@ async function collectSong(): Promise<SongInput> {
 }
 
 async function main() {
-  render(<Header />).unmount();
+  console.log('Song Translator CLI');
+  console.log('Japones → Romaji + Portugues em PDF');
   const action = await select({message: 'O que deseja fazer?', choices: [
     {name: 'Traduzir musica e gerar PDFs', value: 'translate'},
     {name: 'Configurar/atualizar chave OpenAI', value: 'config'},
@@ -82,5 +73,5 @@ async function main() {
 
 main().catch(error => {
   console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+  process.exitCode = 1;
 });
