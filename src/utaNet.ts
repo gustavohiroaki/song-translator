@@ -38,13 +38,19 @@ function firstText($: ReturnType<typeof cheerio.load>, selectors: string[]) {
   return '';
 }
 
-function normalizeLyricsFromHtml(html: string) {
+export function normalizeLyricsFromHtml(html: string) {
   return cheerio.load(`<div>${html.replace(/<br\s*\/?\s*>/gi, '\n')}</div>`)('div').text()
     .split('\n')
     .map((line: string) => line.trim())
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+export function normalizeLyricsInput(input: string) {
+  const trimmed = input.trim();
+  if (/<[a-z!/][^>]*>/i.test(trimmed)) return normalizeLyricsFromHtml(trimmed);
+  return trimmed;
 }
 
 export async function fetchUtaNetSong(idOrUrl: string): Promise<SongInput> {

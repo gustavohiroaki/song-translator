@@ -4,6 +4,20 @@ export function buildUtaNetUrl(idOrUrl) {
         return idOrUrl;
     return `https://www.uta-net.com/song/${idOrUrl.replace(/\D/g, '')}/`;
 }
+export function normalizeLyricsFromHtml(html) {
+    return cheerio.load(`<div>${html.replace(/<br\s*\/?\s*>/gi, '\n')}</div>`)('div').text()
+        .split('\n')
+        .map((line) => line.trim())
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+}
+export function normalizeLyricsInput(input) {
+    const trimmed = input.trim();
+    if (/<[a-z!/][^>]*>/i.test(trimmed))
+        return normalizeLyricsFromHtml(trimmed);
+    return trimmed;
+}
 export async function fetchUtaNetSong(idOrUrl) {
     const url = buildUtaNetUrl(idOrUrl);
     const response = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 song-translator-cli' } });
@@ -16,7 +30,6 @@ export async function fetchUtaNetSong(idOrUrl) {
     const lyricHtml = $('#kashi_area').html();
     if (!lyricHtml)
         throw new Error('Letra nao encontrada no HTML do Uta-Net.');
-    const lyrics = cheerio.load(`<div>${lyricHtml.replace(/<br\s*\/?\s*>/gi, '\n')}</div>`)('div').text()
-        .split('\n').map((line) => line.trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    const lyrics = normalizeLyricsFromHtml(lyricHtml);
     return { title, artist, lyrics, source: url };
 }

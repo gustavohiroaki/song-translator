@@ -5,9 +5,9 @@ import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {getConfigPath, getOpenAiKey, saveOpenAiKey} from './config.js';
-import {fetchUtaNetSong} from './utaNet.js';
+import {fetchUtaNetSong, normalizeLyricsInput} from './utaNet.js';
 import {translateSong} from './openaiTranslator.js';
-import {generatePdfs} from './pdf.js';
+import {generatePdfs, getDefaultOutputDir} from './pdf.js';
 import type {SongInput} from './types.js';
 
 async function configureKey(force = false) {
@@ -73,7 +73,7 @@ async function collectSong(): Promise<SongInput> {
   const title = await input({message: 'Titulo da musica', validate: (v: string) => v.trim().length > 0 || 'Informe o titulo.'});
   const artist = await input({message: 'Artista (opcional)'});
   console.log('Abrindo editor temporario para a letra.');
-  const lyrics = openTemporaryEditor();
+  const lyrics = normalizeLyricsInput(openTemporaryEditor());
   if (!lyrics) throw new Error('Letra manual vazia.');
   return {title, artist, lyrics};
 }
@@ -92,7 +92,7 @@ async function main() {
   const song = await collectSong();
   console.log(`Traduzindo "${song.title}"...`);
   const result = await translateSong(song, apiKey);
-  const outputDir = await input({message: 'Pasta de saida', default: 'output'});
+  const outputDir = await input({message: 'Pasta de saida', default: getDefaultOutputDir()});
   const paths = await generatePdfs(result, outputDir);
   console.log(`PDF romaji: ${paths.romajiPath}`);
   console.log(`PDF portugues: ${paths.portuguesePath}`);

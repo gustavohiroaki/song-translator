@@ -1,8 +1,12 @@
 import PDFDocument from 'pdfkit';
 import { createWriteStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import path from 'node:path';
 function safeName(value) { return value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'musica'; }
+export function getDefaultOutputDir() {
+    return path.join(homedir(), 'Downloads');
+}
 async function writePdf(filePath, title, artist, lines) {
     await mkdir(path.dirname(filePath), { recursive: true });
     const doc = new PDFDocument({ size: 'A4', margin: 54 });
@@ -26,7 +30,7 @@ async function writePdf(filePath, title, artist, lines) {
         doc.on('error', reject);
     });
 }
-export async function generatePdfs(result, outputDir = 'output') {
+export async function generatePdfs(result, outputDir = getDefaultOutputDir()) {
     const base = safeName(result.titleRomaji || result.titlePt);
     const romajiPath = path.resolve(outputDir, `${base}-romaji.pdf`);
     const portuguesePath = path.resolve(outputDir, `${base}-portugues.pdf`);

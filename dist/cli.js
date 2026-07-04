@@ -5,9 +5,9 @@ import Gradient from 'ink-gradient';
 import { input, password, select, confirm } from '@inquirer/prompts';
 import { execFileSync } from 'node:child_process';
 import { getConfigPath, getOpenAiKey, saveOpenAiKey } from './config.js';
-import { fetchUtaNetSong } from './utaNet.js';
+import { fetchUtaNetSong, normalizeLyricsInput } from './utaNet.js';
 import { translateSong } from './openaiTranslator.js';
-import { generatePdfs } from './pdf.js';
+import { generatePdfs, getDefaultOutputDir } from './pdf.js';
 function Header() {
     return _jsxs(Box, { flexDirection: "column", marginBottom: 1, children: [_jsx(Gradient, { name: "summer", children: _jsx(Text, { bold: true, children: "Song Translator CLI" }) }), _jsx(Text, { children: "Japones \u2192 Romaji + Portugues em PDF" })] });
 }
@@ -50,7 +50,7 @@ async function collectSong() {
         }
         chunks.push(text);
     }
-    const lyrics = chunks.join('').trim();
+    const lyrics = normalizeLyricsInput(chunks.join('').trim());
     if (!lyrics)
         throw new Error('Letra manual vazia.');
     return { title, artist, lyrics };
@@ -74,7 +74,7 @@ async function main() {
     const song = await collectSong();
     console.log(`Traduzindo "${song.title}"...`);
     const result = await translateSong(song, apiKey);
-    const outputDir = await input({ message: 'Pasta de saida', default: 'output' });
+    const outputDir = await input({ message: 'Pasta de saida', default: getDefaultOutputDir() });
     const paths = await generatePdfs(result, outputDir);
     console.log(`PDF romaji: ${paths.romajiPath}`);
     console.log(`PDF portugues: ${paths.portuguesePath}`);
