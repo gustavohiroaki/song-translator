@@ -1,6 +1,6 @@
 {
   "name": "song-translator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI para traduzir musicas japonesas e gerar PDFs em romaji e portugues.",
   "type": "module",
   "bin": {
