@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import type {CheerioAPI} from 'cheerio';
 import type {SongInput} from './types.js';
 
 export function buildUtaNetUrl(idOrUrl: string) {
@@ -30,7 +31,7 @@ function extractCookies(response: Response) {
     .join('; ');
 }
 
-function firstText($: cheerio.CheerioAPI, selectors: string[]) {
+function firstText($: CheerioAPI, selectors: string[]) {
   for (const selector of selectors) {
     const text = $(selector).first().text().trim();
     if (text) return text;
